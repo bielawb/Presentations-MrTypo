@@ -155,9 +155,3 @@ $pester = Import-Module -Name Pester -Force -PassThru
         }
     }    
 }
-
-Describe Foo {
-    It Bar {
-        1 | Should be 1
-    }
-}
