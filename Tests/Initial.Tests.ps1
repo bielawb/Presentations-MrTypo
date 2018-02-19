@@ -1,4 +1,4 @@
-Describe 'Testing YinYang presentation' {
+Describe 'Testing MrTypo presentation' {
     foreach ($script in Get-ChildItem -Path ?_*.ps1) {
         Context "Testing $($script.Name)" {
             $syntaxErrors = $null
