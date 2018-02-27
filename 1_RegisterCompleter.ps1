@@ -82,5 +82,30 @@ Get-WinEvent *User*Experience
 #endregion
 
 #region Advanced - fakeBound
+$argumentCompleterSplat = @{
+    CommandName = 'Register-ArgumentCompleter'
+    ParameterName = 'ParameterName'
+    ScriptBlock = {
+        param (
+            $CommandName,    
+            $Parameter,
+            $WordToComplete,
+            $CommandAst,
+            $FakeBoundParameters
+        )
+        $splat = @{}
+        if ($cmd = $FakeBoundParameters['CommandName']) {
+            $splat['Name'] = $cmd
+        }
+    
+        (Get-Command @splat).Parameters.Keys | 
+        Where-Object { $_ -like "$WordToComplete*" } |
+        Sort-Object -Unique |
+        ForEach-Object {
+            New-CompletionResult -CompletionText $_
+        }
+    }
+}
 
+Register-ArgumentCompleter @argumentCompleterSplat
 #endregion
