@@ -2,6 +2,16 @@
 throw "Hey, Dory! Forgot to use F8?"
 #endregion
 
+#region Built-in and installed from gallery
+$PSVersionTable.PSVersion.Major -ge 5
+Get-Command -Name Register-ArgumentCompleter -Module Microsoft.PowerShell.Core
+
+Get-InstalledModule -Name TabExpansionPlusPlus 
+Find-Module -Name TabExpansionPlusPlus | Install-Module -AllowClobber
+Get-Command -Module TabExpansionPlusPlus
+Get-ArgumentCompleter | Group-Object -Property Parameter | Sort-Object Count 
+#endregion
+
 #region Script block parameters
 function Test-Completer {
     param (
@@ -108,4 +118,18 @@ $argumentCompleterSplat = @{
 }
 
 Register-ArgumentCompleter @argumentCompleterSplat
+#endregion
+
+#region Examples from TabExpansionPlusPlus module
+Get-ArgumentCompleter -Name Start-VM | Format-List -Property *
+Get-ArgumentCompleter -Name Rename-LocalGroup | Format-List -Property *
+
+Get-ArgumentCompleter | 
+    ForEach-Object File | 
+    Sort-Object -Unique | 
+    Get-Item -Path { 
+        Join-Path -Path (Get-Module TabExpansionPlusPlus).ModuleBase -ChildPath $_ 
+    }
+    
+
 #endregion

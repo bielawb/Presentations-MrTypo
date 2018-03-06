@@ -31,7 +31,4 @@ Describe 'Testing MrTypo presentation' {
             }
         }    
     }
-    
-    Context 'Testing other scripts used in demos' {
-    }    
 }
