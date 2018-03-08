@@ -1,8 +1,11 @@
 #region DPS
+
 throw "Hey, Dory! Forgot to use F8?"
+
 #endregion
 
 #region Built-in and installed from gallery
+
 $PSVersionTable.PSVersion.Major -ge 5
 Get-Command -Name Register-ArgumentCompleter -Module Microsoft.PowerShell.Core
 
@@ -10,9 +13,11 @@ Get-InstalledModule -Name TabExpansionPlusPlus
 Find-Module -Name TabExpansionPlusPlus | Install-Module -AllowClobber
 Get-Command -Module TabExpansionPlusPlus
 Get-ArgumentCompleter | Group-Object -Property Parameter | Sort-Object Count 
+
 #endregion
 
 #region Script block parameters
+
 function Test-Completer {
     param (
         [String]$Parameter,
@@ -43,26 +48,35 @@ Get-Content C:\temp\AllArguments.json | ConvertFrom-Json
 #endregion
 
 #region Generating completers
+
 # All classes in SMA!
-[Management.Automation.CompletionCompleters] | Get-Member -Static
-[Management.Automation.CompletionCompleters]::CompleteFilename('*.ps1')
-[Management.Automation.CompletionCompleters]::CompleteType('ping')
+. (
+    [scriptblock]::Create(
+        'using namespace System.Management.Automation'
+    )
+)
+
+[CompletionCompleters] | Get-Member -Static
+[CompletionCompleters]::CompleteFilename('*.ps1')
+[CompletionCompleters]::CompleteType('ping')
 
 # Custom - most of the time...
-[Management.Automation.CompletionResult]::new
+[CompletionResult]::new
 
-[Management.Automation.CompletionResult]::new(
+[CompletionResult]::new(
     'Completion',
     'TextInTheList (usually the same)',
-    [Management.Automation.CompletionResultType]::History,
+[CompletionResultType]::History,
     'Tool tip (some long text that is visible only when intellisense is used)'
 )
 
-# ... or ...
-[Management.Automation.CompletionResult]::new('Text')
+    # ... or ...
+[CompletionResult]::new('Text')
+
 #endregion
 
 #region Basic example
+
 $script = {
     $wordToComplete = $args[2]
     (Get-WinEvent -ListLog "$wordToComplete*").foreach{
@@ -84,14 +98,15 @@ $script = {
         New-CompletionResult $_.LogName
     }
 }
+
 Register-ArgumentCompleter -CommandName Get-WinEvent -ParameterName LogName -ScriptBlock $script
 Get-WinEvent *DSC*
 Get-WinEvent *User*Experience
 
-
 #endregion
 
 #region Advanced - fakeBound
+
 $argumentCompleterSplat = @{
     CommandName = 'Register-ArgumentCompleter'
     ParameterName = 'ParameterName'
@@ -109,18 +124,20 @@ $argumentCompleterSplat = @{
         }
     
         (Get-Command @splat).Parameters.Keys | 
-        Where-Object { $_ -like "$WordToComplete*" } |
-        Sort-Object -Unique |
-        ForEach-Object {
-            New-CompletionResult -CompletionText $_
-        }
+            Where-Object { $_ -like "$WordToComplete*" } |
+            Sort-Object -Unique |
+            ForEach-Object {
+                New-CompletionResult -CompletionText $_
+            }
     }
 }
 
 Register-ArgumentCompleter @argumentCompleterSplat
+
 #endregion
 
 #region Examples from TabExpansionPlusPlus module
+
 Get-ArgumentCompleter -Name Start-VM | Format-List -Property *
 Get-ArgumentCompleter -Name Rename-LocalGroup | Format-List -Property *
 
@@ -131,5 +148,7 @@ Get-ArgumentCompleter |
         Join-Path -Path (Get-Module TabExpansionPlusPlus).ModuleBase -ChildPath $_ 
     }
     
+Get-VM -Name D						# I get the list of my VMs with name starting with 'D'
+Rename-LocalGroup -Name A			 I get subset of local groups with name starting with 'A'
 
 #endregion

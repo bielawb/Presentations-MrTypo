@@ -17,6 +17,7 @@ Describe 'Testing MrTypo presentation' {
                     $ast.EndBlock.Statements[0] | Should BeOfType System.Management.Automation.Language.ThrowStatementAst
                 }
             }
+            
             $startRegion = $endRegion = 0
             switch -Wildcard -File $script.FullName {
                 '#region *' {
@@ -26,6 +27,7 @@ Describe 'Testing MrTypo presentation' {
                     $endRegion++
                 }
             }
+            
             It 'All regions in the script are closed by matching endregion' {
                 $startRegion | Should Be $endRegion
             }
