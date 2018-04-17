@@ -66,7 +66,7 @@ Get-Content C:\temp\AllArguments.json | ConvertFrom-Json
 [CompletionResult]::new(
     'Completion',
     'TextInTheList (usually the same)',
-[CompletionResultType]::History,
+    [CompletionResultType]::History,
     'Tool tip (some long text that is visible only when intellisense is used)'
 )
 
@@ -134,6 +134,52 @@ $argumentCompleterSplat = @{
 
 Register-ArgumentCompleter @argumentCompleterSplat
 
+
+$itemPropertyNameCompleter = {
+    param (
+        [String]$CommandName,
+        [String]$ParameterName,
+        [String]$WordToComplete,
+        [Management.Automation.Language.CommandAst]$CommandAst,
+        [hashtable]$FakeBoundParameter
+    )
+
+    $parameters = if ($FakeBoundParameter.Contains('Path')) {
+        @{
+            Path = $FakeBoundParameter['Path']
+            Name = "$WordToComplete*"
+        }
+    } elseif ($FakeBoundParameter.Contains('LiteralPath')) {
+        @{
+            LiteralPath = $FakeBoundParameter['LiteralPath']
+        }
+    }
+
+    (Get-ItemProperty @parameters).PSObject.Properties.Name.Where{ 
+            $_ -like "$WordToComplete*" 
+        }.ForEach{
+            [Management.Automation.CompletionResult]::new($_)
+        }
+}
+
+Register-ArgumentCompleter -CommandName @(
+    'Get-ItemProperty'
+    'Get-ItemPropertyValue'
+    'Set-ItemProperty'
+) -ParameterName Name -ScriptBlock $itemPropertyNameCompleter
+
+Test-ArgumentCompleter -CommandName Get-ItemPropertyValue -ParameterName Name -FakeBoundParameters @{
+    Path = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+} -WordToComplete Build
+
+Register-ArgumentCompleter -CommandName Get-Verb -ParameterName Verb -ScriptBlock {
+    $wordToComplete = $args[2]
+    Get-Verb -verb "$wordToComplete*" | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name)
+    }
+}
+
+Get-Verb -verb A
 #endregion
 
 #region Examples from TabExpansionPlusPlus module
@@ -149,6 +195,26 @@ Get-ArgumentCompleter |
     }
     
 Get-VM -Name D						# I get the list of my VMs with name starting with 'D'
-Rename-LocalGroup -Name A			 I get subset of local groups with name starting with 'A'
+Rename-LocalGroup -Name A			# I get subset of local groups with name starting with 'A'
+
+#endregion
+
+#region useful commands in TabExpansionPlusPlus module
+Test-ArgumentCompleter -CommandName Get-Verb -ParameterName Verb -WordToComplete A
+
+#region fixed
+
+Register-ArgumentCompleter -CommandName Get-Verb -ParameterName Verb -ScriptBlock {
+    $wordToComplete = $args[2]
+    Get-Verb -verb "$wordToComplete*" | ForEach-Object {
+        [System.Management.Automation.CompletionResult]::new($_.Verb)
+    }
+}
+
+Get-Verb -verb A
+
+#endregion
+
+Get-ArgumentCompleter -Name Get-Verb
 
 #endregion
