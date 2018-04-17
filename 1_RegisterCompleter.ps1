@@ -10,7 +10,7 @@ $PSVersionTable.PSVersion.Major -ge 5
 Get-Command -Name Register-ArgumentCompleter -Module Microsoft.PowerShell.Core
 
 Get-InstalledModule -Name TabExpansionPlusPlus 
-Find-Module -Name TabExpansionPlusPlus | Install-Module -AllowClobber
+# Find-Module -Name TabExpansionPlusPlus | Install-Module -AllowClobber
 Get-Command -Module TabExpansionPlusPlus
 Get-ArgumentCompleter | Group-Object -Property Parameter | Sort-Object Count 
 
@@ -58,7 +58,7 @@ Get-Content C:\temp\AllArguments.json | ConvertFrom-Json
 
 [CompletionCompleters] | Get-Member -Static
 [CompletionCompleters]::CompleteFilename('*.ps1')
-[CompletionCompleters]::CompleteType('ping')
+[CompletionCompleters]::CompleteCommand('ping')
 
 # Custom - most of the time...
 [CompletionResult]::new
@@ -90,7 +90,6 @@ Get-WinEvent *User*Experience
 
 # Solution... 
 Start-Process 'https://github.com/lzybkr/TabExpansionPlusPlus/blob/master/TabExpansionPlusPlus.psm1#L33-L85'
-. .\CompletionResult.ps1
 
 $script = {
     $wordToComplete = $args[2]
