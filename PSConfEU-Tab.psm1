@@ -106,4 +106,4 @@ function Get-ConfEUSession {
     }
 }
 
-Export-ModuleMember -Function Get-ConfEUSession
+Export-ModuleMember -Function *

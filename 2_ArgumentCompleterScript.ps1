@@ -111,7 +111,7 @@ function Get-ConfEUSession {
 
 Import-Module "$($psISE.CurrentFile.FullPath)\..\PSConfEU.psm1"
 Import-Module "$($psISE.CurrentFile.FullPath)\..\PSConfEU-Tab.psm1" -Force
-psEdit $PSScriptRoot\*.psm1
+psEdit $pwd\*.psm1
 
 #endregion
 
