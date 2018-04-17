@@ -4,7 +4,6 @@ throw "Hey, Dory! Forgot to use F8?"
 
 #region Information - MSDN
 Start-Process http://bit.ly/IArgComp
-[Management.Automation.CompletionCompleters].FindInterfaces()
 
 <#
 public System.Collections.Generic.IEnumerable<System.Management.Automation.CompletionResult> CompleteArgument (string commandName, string parameterName, string wordToComplete, System.Management.Automation.Language.CommandAst commandAst, System.Collections.IDictionary fakeBoundParameters);
@@ -62,3 +61,5 @@ function Get-ConfEUSession {
 }
 
 #endregion
+
+Import-Module -Name $pwd\PSConfEU-Class.psm1
